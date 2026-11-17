@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>FiyatAvcısı TR — Türkiye İndirim & Hatalı Fiyat Takip</title>
+  <style>
+    :root {
+      --bg: #0b0f17;
+      --panel: #131a27;
+      --panel-2: #192336;
+      --border: #26334d;
+      --text: #eef2f8;
+      --muted: #94a3b8;
+      --accent: #3b82f6;
+      --deal: #10b981;
+      --deal-bg: rgba(16, 185, 129, 0.14);
+      --error-deal: #f59e0b;
+      --error-bg: rgba(245, 158, 11, 0.16);
+      --danger: #ef4444;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif; }
+    body { background: var(--bg); color: var(--text); line-height: 1.5; padding: 20px; }
+    .container { max-width: 1240px; margin: 0 auto; }
+    header {
+      display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center;
+      gap: 16px; background: var(--panel); border: 1px solid var(--border);
+      padding: 20px 24px; border-radius: 14px; margin-bottom: 18px;
+    }
+    .brand h1 { font-size: 1.4rem; display: flex; align-items: center; gap: 10px; }
+    .brand p { color: var(--muted); font-size: 0.9rem; margin-top: 4px; }
+    .status-bar { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
+    .badge {
+      padding: 6px 12px; border-radius: 999px; font-size: 0.8rem; font-weight: 600;
+      background: var(--panel-2); border: 1px solid var(--border); color: var(--text);
+    }
+    .badge.live { border-color: rgba(16, 185, 129, 0.45); color: #34d399; }
+    .tabs { display: flex; gap: 10px; margin-bottom: 18px; flex-wrap: wrap; }
+    .tab-btn {
+      background: var(--panel); border: 1px solid var(--border); color: var(--muted);
+      padding: 10px 18px; border-radius: 10px; cursor: pointer; font-weight: 600; font-size: 0.92rem;
+    }
+    .tab-btn.active { background: var(--accent); border-color: var(--accent); color: #fff; }
+    .controls {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 12px; background: var(--panel); border: 1px solid var(--border);
+      padding: 16px; border-radius: 14px; margin-bottom: 18px;
+    }
+    select, input {
+      width: 100%; padding: 10px 12px; border-radius: 8px;
+      border: 1px solid var(--border); background: var(--panel-2); color: var(--text); font-size: 0.9rem;
+    }
+    .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(310px, 1fr)); gap: 16px; }
+    .card {
+      background: var(--panel); border: 1px solid var(--border); border-radius: 14px;
+      padding: 18px; display: flex; flex-direction: column; justify-content: space-between; gap: 14px;
+    }
+    .card.error-price { border-color: rgba(245, 158, 11, 0.6); box-shadow: 0 0 0 1px rgba(245, 158, 11, 0.15); }
+    .card-top { display: flex; justify-content: space-between; align-items: flex-start; gap: 10px; }
+    .platform {
+      font-size: 0.78rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.04em;
+      padding: 4px 9px; border-radius: 6px; background: var(--panel-2); color: #93c5fd;
+    }
+    .tag-normal { background: var(--deal-bg); color: #34d399; padding: 4px 10px; border-radius: 999px; font-size: 0.78rem; font-weight: 700; }
+    .tag-error { background: var(--error-bg); color: #fbbf24; padding: 4px 10px; border-radius: 999px; font-size: 0.78rem; font-weight: 700; }
+    .title { font-size: 1rem; font-weight: 600; margin-top: 8px; }
+    .prices { display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; }
+    .current-price { font-size: 1.35rem; font-weight: 800; color: #fff; }
+    .old-price { font-size: 0.92rem; color: var(--muted); text-decoration: line-through; }
+    .avg-note { font-size: 0.8rem; color: var(--muted); }
+    .btn {
+      display: inline-block; text-align: center; text-decoration: none;
+      background: var(--accent); color: #fff; padding: 10px 14px; border-radius: 9px;
+      font-weight: 600; font-size: 0.9rem; border: none; cursor: pointer;
+    }
+    .code-box {
+      background: var(--panel); border: 1px solid var(--border); border-radius: 14px;
+      padding: 18px; margin-bottom: 18px;
+    }
+    .code-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; gap: 10px; }
+    pre {
+      background: #070a10; border: 1px solid var(--border); border-radius: 10px;
+      padding: 14px; overflow-x: auto; font-size: 0.82rem; color: #dbeafe; max-height: 420px;
+    }
+    .empty {
+      background: var(--panel); border: 1px dashed var(--border); border-radius: 14px;
+      padding: 36px 20px; text-align: center; color: var(--muted);
+    }
+    .hidden { display: none; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <div class="brand">
+        <h1>🎯 FiyatAvcısı TR</h1>
+        <p>Türkiye satış platformlarındaki indirimleri ve olası hatalı fiyatları 2 saatte bir günceller</p>
+      </div>
+      <div class="status-bar">
+        <span class="badge live">⏱ Otomatik Güncelleme: Her 2 Saatte Bir</span>
+        <span class="badge" id="lastUpdate">Son Güncelleme: Bekleniyor...</span>
+        <span class="badge" id="countBadge">0 Fırsat</span>
+      </div>
+    </header>
+
+    <div class="tabs">
+      <button class="tab-btn active" onclick="switchTab('deals', this)">Canlı Fırsatlar</button>
+      <button class="tab-btn" onclick="switchTab('code', this)">GitHub Bot & Workflow Kodları</button>
+    </div>
+
+    <section id="dealsSection">
+      <div class="controls">
+        <input type="text" id="searchInput" placeholder="Ürün veya marka ara..." oninput="renderDeals()" />
+        <select id="platformFilter" onchange="renderDeals()">
+          <option value="ALL">Tüm Platformlar</option>
+          <option value="Trendyol">Trendyol</option>
+          <option value="Hepsiburada">Hepsiburada</option>
+          <option value="Amazon TR">Amazon TR</option>
+          <option value="N11">N11</option>
+          <option value="Pazarama">Pazarama</option>
+          <option value="Teknosa">Teknosa</option>
+        </select>
+        <select id="typeFilter" onchange="renderDeals()">
+          <option value="ALL">Tüm İndirimler</option>
+          <option value="ERROR_PRICE">⚠️ Hatalı / Olağandışı Düşük Fiyat</option>
+          <option value="NORMAL_DEAL">🏷️ Normal İndirim</option>
+        </select>
+        <select id="sortFilter" onchange="renderDeals()">
+          <option value="DISCOUNT_DESC">İndirim Oranına Göre (Yüksek → Düşük)</option>
+          <option value="PRICE_ASC">Fiyata Göre (Düşük → Yüksek)</option>
+        </select>
+      </div>
+      <div id="dealsGrid" class="grid"></div>
+    </section>
+
+    <section id="codeSection" class="hidden">
+      <div class="code-box">
+        <div class="code-header">
+          <div>
+            <strong>1) `scraper.py` (2 Saatte Bir Çalışan Python Tarayıcı)</strong>
+            <p style="color: var(--muted); font-size: 0.85rem;">Ortalama geçmiş fiyatın %60 altına inen ürünleri otomatik "Hatalı Fiyat" olarak işaretler.</p>
+          </div>
+          <button class="btn" onclick="copyCode('scraperCode', this)">Kodu Kopyala</button>
+        </div>
+        <pre id="scraperCode">import json
+import os
+import time
+import urllib.request
+from datetime import datetime, timezone
+
+DATA_DIR = "data"
+DEALS_FILE = os.path.join(DATA_DIR, "deals.json")
+HISTORY_FILE = os.path.join(DATA_DIR, "price_history.json")
+
+PLATFORMS = [
+    "Trendyol", "Hepsiburada", "Amazon TR", "N11", "Pazarama", "Teknosa"
+]
+
+def load_json(path, default):
+    if os.path.exists(path):
+        with open(path, "r", encoding="utf-8") as f:
+            try:
+                return json.load(f)
+            except Exception:
+                return default
+    return default
+
+def save_json(path, payload):
+    os.makedirs(os.path.dirname(path), exist_ok=True)
+    with open(path, "w", encoding="utf-8") as f:
+        json.dump(payload, f, ensure_ascii=False, indent=2)
+
+def fetch_platform_candidates():
+    # Buraya platform API / feed veya çerezli istek fonksiyonlarınızı bağlayabilirsiniz.
+    # Örnek yapı: her ürün {id, platform, title, current_price, old_price, url} döndürür.
+    return []
+
+def classify_deal(item, history):
+    current = float(item["current_price"])
+    old = float(item.get("old_price") or current)
+    prev_prices = history.get(item["id"], [])
+    avg_price = (sum(prev_prices) / len(prev_prices)) if prev_prices else old
+
+    discount_pct = round(((avg_price - current) / avg_price) * 100, 1) if avg_price > 0 else 0
+    is_error_price = discount_pct >= 60.0
+
+    prev_prices.append(current)
+    history[item["id"]] = prev_prices[-15:]
+
+    return {
+        "id": item["id"],
+        "platform": item["platform"],
+        "title": item["title"],
+        "current_price": current,
+        "old_price": old,
+        "avg_price": round(avg_price, 2),
+        "discount_pct": max(discount_pct, 0),
+        "deal_type": "ERROR_PRICE" if is_error_price else "NORMAL_DEAL",
+        "url": item.get("url", "#")
+    }
+
+def main():
+    history = load_json(HISTORY_FILE, {})
+    raw_items = fetch_platform_candidates()
+    deals = []
+
+    for item in raw_items:
+        if float(item["current_price"]) < float(item.get("old_price", item["current_price"])):
+            deals.append(classify_deal(item, history))
+        time.sleep(0.2)
+
+    deals.sort(key=lambda x: x["discount_pct"], reverse=True)
+
+    output = {
+        "last_updated": datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M UTC"),
+        "total": len(deals),
+        "deals": deals
+    }
+
+    save_json(HISTORY_FILE, history)
+    save_json(DEALS_FILE, output)
+    print(f"Güncellendi: {len(deals)} fırsat kaydedildi.")
+
+if __name__ == "__main__":
+    main()
+</pre>
+      </div>
+
+      <div class="code-box">
+        <div class="code-header">
+          <div>
+            <strong>2) `.github/workflows/scrape.yml` (Her 2 Saatte Bir Otomatik Çalıştırma)</strong>
+            <p style="color: var(--muted); font-size: 0.85rem;">GitHub Actions üzerinde 00:00, 02:00, 04:00... saatlerinde çalışır ve `data/deals.json` dosyasını günceller.</p>
+          </div>
+          <button class="btn" onclick="copyCode('workflowCode', this)">Kodu Kopyala</button>
+        </div>
+        <pre id="workflowCode">name: FiyatAvcısı TR - 2 Saatlik Otomatik Tarama
+
+on:
+  schedule:
+    - cron: '0 */2 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  scrape-deals:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Depoyu İndir
+        uses: actions/checkout@v4
+
+      - name: Python Kurulumu
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Tarama Botunu Çalıştır
+        run: python scraper.py
+
+      - name: Değişiklikleri Depoya Kaydet
+        run: |
+          git config user.name "FiyatAvci Bot"
+          git config user.email "bot@users.noreply.github.com"
+          git add data/deals.json data/price_history.json
+          git diff --staged --quiet || git commit -m "Otomatik Fiyat Güncellemesi: $(date -u +'%Y-%m-%d %H:%M UTC')"
+          git push
+</pre>
+      </div>
+    </section>
+  </div>
+
+  <script>
+    let allDeals = [];
+
+    function switchTab(tab, btn) {
+      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      document.getElementById('dealsSection').classList.toggle('hidden', tab !== 'deals');
+      document.getElementById('codeSection').classList.toggle('hidden', tab !== 'code');
+    }
+
+    function copyCode(id, btn) {
+      const text = document.getElementById(id).innerText;
+      navigator.clipboard.writeText(text).then(() => {
+        const old = btn.innerText;
+        btn.innerText = 'Kopyalandı ✓';
+        setTimeout(() => btn.innerText = old, 1800);
+      });
+    }
+
+    async function loadDeals() {
+      try {
+        const res = await fetch('./data/deals.json?t=' + Date.now());
+        if (!res.ok) throw new Error('Veri dosyası henüz oluşmadı');
+        const data = await res.json();
+        allDeals = Array.isArray(data.deals) ? data.deals : [];
+        document.getElementById('lastUpdate').innerText =
+          'Son Güncelleme: ' + (data.last_updated || 'Henüz çalışmadı');
+      } catch (e) {
+        allDeals = [];
+        document.getElementById('lastUpdate').innerText = 'Son Güncelleme: İlk tarama bekleniyor';
+      }
+      renderDeals();
+    }
+
+    function renderDeals() {
+      const q = document.getElementById('searchInput').value.toLowerCase().trim();
+      const platform = document.getElementById('platformFilter').value;
+      const type = document.getElementById('typeFilter').value;
+      const sort = document.getElementById('sortFilter').value;
+
+      let filtered = allDeals.filter(d => {
+        const matchQ = !q || d.title.toLowerCase().includes(q) || d.platform.toLowerCase().includes(q);
+        const matchP = platform === 'ALL' || d.platform === platform;
+        const matchT = type === 'ALL' || d.deal_type === type;
+        return matchQ && matchP && matchT;
+      });
+
+      if (sort === 'DISCOUNT_DESC') {
+        filtered.sort((a, b) => b.discount_pct - a.discount_pct);
+      } else {
+        filtered.sort((a, b) => a.current_price - b.current_price);
+      }
+
+      document.getElementById('countBadge').innerText = filtered.length + ' Fırsat';
+      const grid = document.getElementById('dealsGrid');
+
+      if (!filtered.length) {
+        grid.innerHTML = `<div class="empty" style="grid-column: 1 / -1;">
+          <h3>Henüz listelenecek indirimli ürün yok</h3>
+          <p style="margin-top:6px;">GitHub Actions üzerinden <strong>scraper.py</strong> çalıştırıldığında <code>data/deals.json</code> içindeki indirimli ve hatalı fiyatlı ürünler burada listelenecek.</p>
+        </div>`;
+        return;
+      }
+
+      grid.innerHTML = filtered.map(d => {
+        const isErr = d.deal_type === 'ERROR_PRICE';
+        return `
+          <article class="card ${isErr ? 'error-price' : ''}">
+            <div>
+              <div class="card-top">
+                <span class="platform">${d.platform}</span>
+                <span class="${isErr ? 'tag-error' : 'tag-normal'}">
+                  ${isErr ? '⚠️ Hatalı Fiyat %' + d.discount_pct : '🏷️ %' + d.discount_pct + ' İndirim'}
+                </span>
+              </div>
+              <div class="title">${d.title}</div>
+            </div>
+            <div>
+              <div class="prices">
+                <span class="current-price">${Number(d.current_price).toLocaleString('tr-TR')} ₺</span>
+                <span class="old-price">${Number(d.old_price).toLocaleString('tr-TR')} ₺</span>
+              </div>
+              <div class="avg-note">Ort. Fiyat: ${Number(d.avg_price).toLocaleString('tr-TR')} ₺</div>
+            </div>
+            <a class="btn" href="${d.url}" target="_blank" rel="noopener">Ürüne Git</a>
+          </article>
+        `;
+      }).join('');
+    }
+
+    loadDeals();
+    setInterval(loadDeals, 120000);
+  </script>
+</body>
+</html>
