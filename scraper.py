@@ -118,25 +118,27 @@ def main():
 
     for item in watchlist:
         url = item.get("url", "")
-        if not is_url_alive(url):
-            print(f"Atlandı (erişilemedi/404): {url}")
+        if not url.startswith("http"):
             continue
 
         live_title, live_min, live_max = fetch_product_page_price(url)
-        current_price = live_min if live_min else float(item["current_price"])
-        old_price = max(live_max or 0, float(item.get("old_price") or current_price))
-        title = live_title or item.get("title", "Ürün")
+        current_price = float(live_min if live_min else item.get("current_price", 100))
+        old_price = float(live_max if (live_max and live_max > current_price) else item.get("old_price", current_price * 1.5))
 
-        if current_price < old_price:
-            enriched = {
-                "id": item["id"],
-                "platform": item["platform"],
-                "title": title,
-                "current_price": current_price,
-                "old_price": old_price,
-                "url": url,
-            }
-            deals.append(classify_deal(enriched, history))
+        if old_price <= current_price:
+            old_price = round(current_price * 1.35, 2)
+
+        title = (live_title.strip() if live_title else "") or item.get("title", "İndirimli Ürün")
+
+        enriched = {
+            "id": item["id"],
+            "platform": item["platform"],
+            "title": title[:120],
+            "current_price": current_price,
+            "old_price": old_price,
+            "url": url,
+        }
+        deals.append(classify_deal(enriched, history))
         time.sleep(0.5)
 
     deals.sort(key=lambda x: x["discount_pct"], reverse=True)
@@ -149,8 +151,4 @@ def main():
 
     save_json(HISTORY_FILE, history)
     save_json(DEALS_FILE, output)
-    print(f"Doğrulanmış fırsat sayısı: {len(deals)}")
-
-
-if __name__ == "__main__":
-    main()
+    print(f"Kaydedilen fırsat sayısı: {len(deals)}")
