@@ -1,0 +1,26 @@
+[
+  {
+    "id": "hb-indirim-1",
+    "platform": "Hepsiburada",
+    "title": "Hepsiburada Süper Fiyatlar / Günün Fırsatları",
+    "current_price": 999.0,
+    "old_price": 1999.0,
+    "url": "https://www.hepsiburada.com/kampanyalar/super-fiyatlar"
+  },
+  {
+    "id": "ty-indirim-2",
+    "platform": "Trendyol",
+    "title": "Trendyol Flaş Ürünler",
+    "current_price": 799.0,
+    "old_price": 1599.0,
+    "url": "https://www.trendyol.com/sr?fl=flash"
+  },
+  {
+    "id": "amz-indirim-3",
+    "platform": "Amazon TR",
+    "title": "Amazon TR Günün Fırsatları",
+    "current_price": 1299.0,
+    "old_price": 2499.0,
+    "url": "https://www.amazon.com.tr/deals"
+  }
+]
