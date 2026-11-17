@@ -1,5 +1,28 @@
 {
-  "last_updated": "2026-11-17 13:10 UTC",
-  "total": 0,
-  "deals": []
+  "last_updated": "2026-11-17 13:30 UTC",
+  "total": 2,
+  "deals": [
+    {
+      "id": "demo-1",
+      "platform": "Hepsiburada",
+      "title": "Hepsiburada Süper Fiyatlar Fırsatı",
+      "current_price": 999.0,
+      "old_price": 1999.0,
+      "avg_price": 1999.0,
+      "discount_pct": 50.0,
+      "deal_type": "NORMAL_DEAL",
+      "url": "https://www.hepsiburada.com/kampanyalar/super-fiyatlar"
+    },
+    {
+      "id": "demo-2",
+      "platform": "Trendyol",
+      "title": "Trendyol Flaş Ürünler Fırsatı",
+      "current_price": 799.0,
+      "old_price": 2499.0,
+      "avg_price": 2499.0,
+      "discount_pct": 68.0,
+      "deal_type": "ERROR_PRICE",
+      "url": "https://www.trendyol.com/sr?fl=flash"
+    }
+  ]
 }
