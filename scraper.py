@@ -1,15 +1,41 @@
 import json
 import os
+import re
 import time
+import urllib.parse
+import urllib.request
 from datetime import datetime, timezone
 
 DATA_DIR = "data"
 DEALS_FILE = os.path.join(DATA_DIR, "deals.json")
 HISTORY_FILE = os.path.join(DATA_DIR, "price_history.json")
 
-PLATFORMS = [
-    "Trendyol", "Hepsiburada", "Amazon TR", "N11", "Pazarama", "Teknosa"
+HEADERS = {
+    "User-Agent": (
+        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
+        "AppleWebKit/537.36 (KHTML, like Gecko) "
+        "Chrome/131.0.0.0 Safari/537.36"
+    ),
+    "Accept-Language": "tr-TR,tr;q=0.9,en-US;q=0.8,en;q=0.7",
+}
+
+# Taramak istediğin kategori / indirim / arama URL'leri ve platform adları
+# Bot, bu sayfalardaki ürün kartlarını ve doğrudan ürün linklerini tarar.
+SCAN_SOURCES = [
+    {
+        "platform": "N11",
+        "url": "https://www.n11.com/bilgisayar",
+    },
+    {
+        "platform": "Pazarama",
+        "url": "https://www.pazarama.com/elektronik",
+    },
+    {
+        "platform": "Teknosa",
+        "url": "https://www.teknosa.com/telefon-c-100001",
+    },
 ]
+
 
 def load_json(path, default):
     if os.path.exists(path):
@@ -20,32 +46,93 @@ def load_json(path, default):
                 return default
     return default
 
+
 def save_json(path, payload):
     os.makedirs(os.path.dirname(path), exist_ok=True)
     with open(path, "w", encoding="utf-8") as f:
         json.dump(payload, f, ensure_ascii=False, indent=2)
 
-def fetch_platform_candidates():
-    # Buraya platform API / feed veya çerezli istek fonksiyonlarınızı bağlayabilirsiniz.
-    # Örnek test verisi (sistem çalıştığında arayüzde hemen görünmesi için):
-    return [
-        {
-            "id": "ty-1001",
-            "platform": "Trendyol",
-            "title": "Örnek Akıllı Robot Süpürge (Test Fırsatı)",
-            "current_price": 4299.0,
-            "old_price": 12999.0,
-            "url": "https://www.trendyol.com"
-        },
-        {
-            "id": "hb-2002",
-            "platform": "Hepsiburada",
-            "title": "Örnek Kablosuz Kulaklık ANC (Test Fırsatı)",
-            "current_price": 1850.0,
-            "old_price": 2499.0,
-            "url": "https://www.hepsiburada.com"
-        }
-    ]
+
+def fetch_html(url, timeout=15):
+    req = urllib.request.Request(url, headers=HEADERS)
+    with urllib.request.urlopen(req, timeout=timeout) as resp:
+        raw = resp.read()
+        encoding = resp.headers.get_content_charset() or "utf-8"
+        return raw.decode(encoding, errors="replace")
+
+
+def parse_price_tr(text):
+    if not text:
+        return None
+    cleaned = re.sub(r"[^\d,\.]", "", str(text))
+    if not cleaned:
+        return None
+    if "," in cleaned and "." in cleaned:
+        cleaned = cleaned.replace(".", "").replace(",", ".")
+    elif "," in cleaned:
+        cleaned = cleaned.replace(",", ".")
+    try:
+        val = float(cleaned)
+        return val if val > 0 else None
+    except ValueError:
+        return None
+
+
+def extract_products_from_html(platform, base_url, html):
+    """
+    Sayfa içindeki ürün bağlantılarını ve fiyatlarını ayıklar.
+    Her ürün için doğrudan ürün sayfasının tam URL'sini üretir.
+    """
+    products = []
+    seen_urls = set()
+
+    # Sayfadaki tüm <a> etiketlerini bul
+    for match in re.finditer(
+        r'<a\b[^>]*href=["\']([^"\']+)["\'][^>]*>(.*?)</a>',
+        html,
+        flags=re.IGNORECASE | re.DOTALL,
+    ):
+        href, inner = match.group(1), match.group(2)
+        full_url = urllib.parse.urljoin(base_url, href.strip())
+
+        # Sadece ürün detay sayfasına benzeyen URL'leri al
+        if not any(k in full_url.lower() for k in ["-p-", "/p/", "/urun/", "dp/", "pd/"]):
+            continue
+        if full_url in seen_urls:
+            continue
+
+        clean_text = re.sub(r"<[^>]+>", " ", inner)
+        clean_text = re.sub(r"\s+", " ", clean_text).strip()
+        if len(clean_text) < 8:
+            continue
+
+        # Kart çevresindeki fiyat ifadelerini ara
+        start = max(0, match.start() - 400)
+        end = min(len(html), match.end() + 400)
+        window = re.sub(r"<[^>]+>", " ", html[start:end])
+        window = re.sub(r"\s+", " ", window)
+
+        price_matches = re.findall(r"(\d{1,3}(?:\.\d{3})*,\d{2})\s*₺?", window)
+        prices = [parse_price_tr(p) for p in price_matches]
+        prices = [p for p in prices if p is not None]
+
+        if len(prices) >= 2:
+            prices_sorted = sorted(set(prices))
+            current_price = prices_sorted[0]
+            old_price = prices_sorted[-1]
+            if current_price < old_price:
+                seen_urls.add(full_url)
+                products.append({
+                    "id": f"{platform.lower()}-{abs(hash(full_url))}",
+                    "platform": platform,
+                    "title": clean_text[:120],
+                    "current_price": current_price,
+                    "old_price": old_price,
+                    "url": full_url,
+                })
+
+    return products
+
 
 def classify_deal(item, history):
     current = float(item["current_price"])
@@ -68,30 +155,41 @@ def classify_deal(item, history):
         "avg_price": round(avg_price, 2),
         "discount_pct": max(discount_pct, 0),
         "deal_type": "ERROR_PRICE" if is_error_price else "NORMAL_DEAL",
-        "url": item.get("url", "#")
+        "url": item["url"],
     }
+
 
 def main():
     history = load_json(HISTORY_FILE, {})
-    raw_items = fetch_platform_candidates()
-    deals = []
+    all_deals = []
 
-    for item in raw_items:
-        if float(item["current_price"]) < float(item.get("old_price", item["current_price"])):
-            deals.append(classify_deal(item, history))
-        time.sleep(0.2)
+    for source in SCAN_SOURCES:
+        platform = source["platform"]
+        url = source["url"]
+        try:
+            html = fetch_html(url)
+            candidates = extract_products_from_html(platform, url, html)
+            for item in candidates:
+                all_deals.append(classify_deal(item, history))
+            print(f"{platform}: {len(candidates)} indirimli ürün bulundu.")
+        except Exception as e:
+            print(f"{platform} taranamadı: {e}")
+        time.sleep(1)
 
-    deals.sort(key=lambda x: x["discount_pct"], reverse=True)
+    # Sadece gerçek indirimli ürünleri tut
+    all_deals = [d for d in all_deals if d["discount_pct"] > 0]
+    all_deals.sort(key=lambda x: x["discount_pct"], reverse=True)
 
     output = {
         "last_updated": datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M UTC"),
-        "total": len(deals),
-        "deals": deals
+        "total": len(all_deals),
+        "deals": all_deals,
     }
 
     save_json(HISTORY_FILE, history)
     save_json(DEALS_FILE, output)
-    print(f"Güncellendi: {len(deals)} fırsat kaydedildi.")
+    print(f"Toplam {len(all_deals)} fırsat kaydedildi.")
+
 
 if __name__ == "__main__":
     main()
