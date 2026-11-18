@@ -3,177 +3,275 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>FiyatAvcısı TR — İndirim & Hatalı Fiyat Takip</title>
+  <title>FiyatAvcısı Pro — Türkiye'nin En Kapsamlı Fırsat & Hatalı Fiyat Radarı</title>
   <style>
     :root {
-      --bg: #0b1020;
-      --panel: #131b33;
-      --card: #182240;
-      --border: #283663;
-      --text: #eef2ff;
-      --muted: #9aa8d0;
-      --accent: #3b82f6;
-      --accent-hover: #2563eb;
+      --bg: #090d16;
+      --panel: #111827;
+      --card: #1f293d;
+      --border: #334155;
+      --text: #f8fafc;
+      --muted: #94a3b8;
+      --primary: #6366f1;
+      --primary-hover: #4f46e5;
       --green: #10b981;
       --red: #ef4444;
       --amber: #f59e0b;
     }
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: system-ui, -apple-system, sans-serif; }
-    body { background: var(--bg); color: var(--text); min-height: 100vh; padding: 24px 16px; }
-    .container { max-width: 1140px; margin: 0 auto; }
+    body { background: var(--bg); color: var(--text); min-height: 100vh; padding: 20px 12px; }
+    .container { max-width: 1300px; margin: 0 auto; }
+    
+    /* Hero Section */
     .hero {
-      background: linear-gradient(135deg, #172554 0%, #131b33 60%, #1e1b4b 100%);
+      background: linear-gradient(135deg, #1e1b4b 0%, #111827 50%, #0f172a 100%);
       border: 1px solid var(--border);
-      border-radius: 16px;
-      padding: 24px;
-      margin-bottom: 20px;
+      border-radius: 20px;
+      padding: 28px;
+      margin-bottom: 24px;
       display: flex;
       flex-wrap: wrap;
-      gap: 16px;
+      gap: 20px;
       justify-content: space-between;
       align-items: center;
+      box-shadow: 0 10px 25px -5px rgba(0,0,0,0.3);
     }
-    .hero h1 { font-size: 1.6rem; margin-bottom: 6px; }
-    .hero p { color: var(--muted); font-size: 0.95rem; }
+    .hero h1 { font-size: 1.8rem; font-weight: 800; margin-bottom: 6px; background: linear-gradient(to right, #818cf8, #c084fc); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+    .hero p { color: var(--muted); font-size: 0.98rem; }
     .badges { display: flex; flex-wrap: wrap; gap: 10px; }
     .pill {
-      background: rgba(255,255,255,0.06);
+      background: rgba(255,255,255,0.05);
       border: 1px solid var(--border);
       padding: 8px 14px;
       border-radius: 999px;
       font-size: 0.85rem;
       color: var(--text);
+      display: flex;
+      align-items: center;
+      gap: 6px;
     }
-    .pill.live { border-color: rgba(16,185,129,0.5); color: #6ee7b7; }
-    .controls {
+    .pill.live { border-color: rgba(16,185,129,0.4); color: #34d399; }
+
+    /* Controls & Filters */
+    .controls-wrapper {
       background: var(--panel);
       border: 1px solid var(--border);
-      border-radius: 14px;
-      padding: 14px;
-      margin-bottom: 20px;
+      border-radius: 16px;
+      padding: 16px;
+      margin-bottom: 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+    .filter-row {
       display: grid;
       grid-template-columns: 2fr 1fr 1fr 1fr;
       gap: 12px;
     }
-    @media (max-width: 768px) { .controls { grid-template-columns: 1fr; } }
+    @media (max-width: 900px) { .filter-row { grid-template-columns: 1fr; } }
+    
     input, select {
       background: var(--card);
       color: var(--text);
       border: 1px solid var(--border);
-      padding: 10px 12px;
-      border-radius: 10px;
-      font-size: 0.92rem;
+      padding: 12px 14px;
+      border-radius: 12px;
+      font-size: 0.95rem;
       outline: none;
+      transition: border-color 0.2s;
     }
-    input:focus, select:focus { border-color: var(--accent); }
+    input:focus, select:focus { border-color: var(--primary); }
+
+    /* Category Quick Tabs */
+    .tabs { display: flex; flex-wrap: wrap; gap: 8px; }
+    .tab-btn {
+      background: var(--card);
+      border: 1px solid var(--border);
+      color: var(--muted);
+      padding: 8px 16px;
+      border-radius: 10px;
+      font-size: 0.88rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .tab-btn:hover, .tab-btn.active { background: var(--primary); color: #fff; border-color: var(--primary); }
+
+    /* Product Grid */
     .grid {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-      gap: 16px;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 20px;
     }
     .card {
       background: var(--card);
       border: 1px solid var(--border);
       border-radius: 16px;
-      padding: 18px;
+      overflow: hidden;
       display: flex;
       flex-direction: column;
       justify-content: space-between;
-      gap: 14px;
-      transition: transform 0.15s ease, border-color 0.15s ease;
+      transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
     }
-    .card:hover { transform: translateY(-3px); border-color: #4f67b8; }
-    .card-top { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
-    .platform-tag {
-      background: rgba(59,130,246,0.18);
-      color: #93c5fd;
-      border: 1px solid rgba(59,130,246,0.35);
-      padding: 4px 10px;
-      border-radius: 999px;
-      font-size: 0.78rem;
-      font-weight: 600;
+    .card:hover {
+      transform: translateY(-4px);
+      border-color: var(--primary);
+      box-shadow: 0 12px 30px -10px rgba(99, 102, 241, 0.25);
+    }
+    .img-container {
+      position: relative;
+      width: 100%;
+      height: 200px;
+      background: #0f172a;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .img-container img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.3s;
+    }
+    .card:hover .img-container img { transform: scale(1.05); }
+    
+    .badges-overlay {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      right: 10px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      z-index: 2;
+    }
+    .platform-badge {
+      background: rgba(15, 23, 42, 0.85);
+      backdrop-filter: blur(4px);
+      color: #fff;
+      padding: 5px 10px;
+      border-radius: 8px;
+      font-size: 0.75rem;
+      font-weight: 700;
+      border: 1px solid rgba(255,255,255,0.1);
     }
     .deal-badge {
-      padding: 4px 10px;
-      border-radius: 999px;
-      font-size: 0.78rem;
-      font-weight: 700;
+      padding: 5px 10px;
+      border-radius: 8px;
+      font-size: 0.75rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
     }
-    .deal-error { background: rgba(239,68,68,0.2); color: #fca5a5; border: 1px solid rgba(239,68,68,0.45); }
-    .deal-normal { background: rgba(16,185,129,0.2); color: #6ee7b7; border: 1px solid rgba(16,185,129,0.45); }
-    .title { font-size: 1rem; font-weight: 600; line-height: 1.4; }
-    .prices { display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; }
-    .current { font-size: 1.35rem; font-weight: 800; color: #ffffff; }
-    .old { font-size: 0.92rem; color: var(--muted); text-decoration: line-through; }
-    .pct { font-size: 0.85rem; font-weight: 700; color: #34d399; }
+    .badge-error { background: rgba(239, 68, 68, 0.9); color: #fff; box-shadow: 0 2px 10px rgba(239,68,68,0.4); }
+    .badge-mega { background: rgba(245, 158, 11, 0.9); color: #fff; box-shadow: 0 2px 10px rgba(245,158,11,0.4); }
+    .badge-normal { background: rgba(16, 185, 129, 0.9); color: #fff; }
+
+    .card-body { padding: 16px; display: flex; flex-direction: column; gap: 12px; flex-grow: 1; justify-content: space-between; }
+    .title { font-size: 0.98rem; font-weight: 600; line-height: 1.4; color: #f1f5f9; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+    
+    .price-box { display: flex; align-items: baseline; gap: 8px; flex-wrap: wrap; }
+    .current-price { font-size: 1.35rem; font-weight: 800; color: #fff; }
+    .old-price { font-size: 0.88rem; color: var(--muted); text-decoration: line-through; }
+    .discount-rate { font-size: 0.82rem; font-weight: 700; color: #34d399; background: rgba(52, 211, 153, 0.1); padding: 2px 6px; border-radius: 6px; }
+
     .btn {
       display: block;
       text-align: center;
       text-decoration: none;
-      background: var(--accent);
+      background: var(--primary);
       color: #fff;
-      font-weight: 600;
-      padding: 11px 14px;
-      border-radius: 10px;
-      transition: background 0.15s ease;
+      font-weight: 700;
+      padding: 12px;
+      border-radius: 12px;
+      font-size: 0.92rem;
+      transition: background 0.2s, transform 0.1s;
     }
-    .btn:hover { background: var(--accent-hover); }
-    .empty {
+    .btn:hover { background: var(--primary-hover); }
+    .btn:active { transform: scale(0.98); }
+
+    .empty-state {
       grid-column: 1 / -1;
       background: var(--panel);
-      border: 1px dashed var(--border);
-      border-radius: 14px;
-      padding: 36px;
+      border: 2px dashed var(--border);
+      border-radius: 16px;
+      padding: 48px;
       text-align: center;
       color: var(--muted);
+      font-size: 1.05rem;
     }
   </style>
 </head>
 <body>
   <div class="container">
-    <div class="hero">
+    <header class="hero">
       <div>
-        <h1>🎯 FiyatAvcısı TR</h1>
-        <p>Normal fiyatının altına düşen ve ekstra indirime giren ürünler — doğrudan ürün sayfasına yönlendirme</p>
+        <h1>💎 FiyatAvcısı Pro</h1>
+        <p>Türkiye'deki tüm e-ticaret platformlarındaki en keskin indirimler ve hatalı fiyat radarı</p>
       </div>
       <div class="badges">
-        <span class="pill live">● Otomatik Tarama: Her 2 Saatte Bir</span>
+        <span class="pill live">● Canlı Takip Aktif</span>
         <span class="pill" id="lastUpdated">Son Güncelleme: --</span>
-        <span class="pill" id="totalCount">0 Fırsat</span>
+        <span class="pill" id="totalCount">0 Ürün</span>
+      </div>
+    </header>
+
+    <div class="controls-wrapper">
+      <div class="filter-row">
+        <input type="text" id="searchInput" placeholder="Ürün, marka veya model ara (örn: Dyson, iPhone, Airfryer)..." />
+        <select id="platformFilter">
+          <option value="ALL">Tüm Platformlar (Tümü)</option>
+          <option value="Trendyol">Trendyol</option>
+          <option value="Hepsiburada">Hepsiburada</option>
+          <option value="Amazon TR">Amazon TR</option>
+          <option value="N11">N11</option>
+          <option value="Teknosa">Teknosa</option>
+          <option value="MediaMarkt">MediaMarkt</option>
+          <option value="Vatan Bilgisayar">Vatan Bilgisayar</option>
+          <option value="Boyner">Boyner</option>
+          <option value="H&M / LCW / DeFacto">Moda & Giyim (LCW/DeFacto)</option>
+          <option value="Migros / Carrefour">Süpermarket (Migros/Carrefour)</option>
+        </select>
+        <select id="typeFilter">
+          <option value="ALL">Tüm Fırsat Tipleri</option>
+          <option value="ERROR_PRICE">🔥 Hatalı Fiyat (%50+ Ekstra)</option>
+          <option value="MEGA_DEAL">⚡ Mega İndirimler</option>
+          <option value="NORMAL_DEAL">🏷️ Normal İndirimler</option>
+        </select>
+        <select id="sortFilter">
+          <option value="discount_desc">İndirim Oranına Göre (Yüksek)</option>
+          <option value="price_asc">Fiyata Göre (En Ucuz)</option>
+          <option value="price_desc">Fiyata Göre (En Pahalı)</option>
+        </select>
+      </div>
+
+      <div class="tabs">
+        <button class="tab-btn active" onclick="setCategoryTab('ALL')">✨ Tüm Fırsatlar</button>
+        <button class="tab-btn" onclick="setCategoryTab('ERROR_PRICE')">🔥 Hatalı Fiyatlar Radarı</button>
+        <button class="tab-btn" onclick="setCategoryTab('MEGA_DEAL')">⚡ Mega İndirimler</button>
+        <button class="tab-btn" onclick="setCategoryTab('Elektronik')">💻 Elektronik & Bilgisayar</button>
+        <button class="tab-btn" onclick="setCategoryTab('Ev & Yaşam')">🏠 Ev, Yaşam & Mutfak</button>
+        <button class="tab-btn" onclick="setCategoryTab('Kozmetik')">💄 Kozmetik & Kişisel Bakım</button>
       </div>
     </div>
 
-    <div class="controls">
-      <input type="text" id="searchInput" placeholder="Ürün veya marka ara..." />
-      <select id="platformFilter">
-        <option value="ALL">Tüm Platformlar</option>
-        <option value="Trendyol">Trendyol</option>
-        <option value="Hepsiburada">Hepsiburada</option>
-        <option value="Amazon TR">Amazon TR</option>
-        <option value="N11">N11</option>
-        <option value="Pazarama">Pazarama</option>
-        <option value="Teknosa">Teknosa</option>
-      </select>
-      <select id="typeFilter">
-        <option value="ALL">Tüm İndirimler</option>
-        <option value="ERROR_PRICE">🔥 Hatalı Fiyat (%60+)</option>
-        <option value="NORMAL_DEAL">⚡ Ekstra İndirim</option>
-      </select>
-      <select id="sortFilter">
-        <option value="discount_desc">İndirim Oranına Göre</option>
-        <option value="price_asc">Fiyata Göre (Düşük → Yüksek)</option>
-        <option value="price_desc">Fiyata Göre (Yüksek → Düşük)</option>
-      </select>
-    </div>
-
-    <div class="grid" id="dealsGrid"></div>
+    <main class="grid" id="dealsGrid"></main>
   </div>
 
   <script>
     let allDeals = [];
+    let currentTab = 'ALL';
 
     function formatTL(val) {
       return Number(val || 0).toLocaleString("tr-TR", { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + " ₺";
+    }
+
+    function setCategoryTab(tab) {
+      currentTab = tab;
+      document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+      event.target.classList.add('active');
+      renderDeals();
     }
 
     function renderDeals() {
@@ -185,7 +283,16 @@
       let list = allDeals.filter(d => {
         const matchQ = !q || d.title.toLowerCase().includes(q) || d.platform.toLowerCase().includes(q);
         const matchP = plat === "ALL" || d.platform === plat;
-        const matchT = dtype === "ALL" || d.deal_type === dtype;
+        
+        let matchT = true;
+        if (currentTab === 'ERROR_PRICE') matchT = d.deal_type === 'ERROR_PRICE';
+        else if (currentTab === 'MEGA_DEAL') matchT = d.deal_type === 'MEGA_DEAL';
+        else if (currentTab !== 'ALL') matchT = d.category === currentTab;
+
+        if (dtype !== "ALL" && matchT) {
+          matchT = d.deal_type === dtype;
+        }
+
         return matchQ && matchP && matchT;
       });
 
@@ -193,36 +300,49 @@
       if (sort === "price_asc") list.sort((a, b) => a.current_price - b.current_price);
       if (sort === "price_desc") list.sort((a, b) => b.current_price - a.current_price);
 
-      document.getElementById("totalCount").textContent = `${list.length} Fırsat`;
+      document.getElementById("totalCount").textContent = `${list.length} Ürün`;
       const grid = document.getElementById("dealsGrid");
 
       if (!list.length) {
-        grid.innerHTML = `<div class="empty">Seçili filtrelere uygun fırsat bulunamadı.</div>`;
+        grid.innerHTML = `<div class="empty-state">Seçtiğiniz kriterlere uygun aktif fırsat bulunamadı. Filtreleri sıfırlayarak tekrar deneyebilirsiniz.</div>`;
         return;
       }
 
       grid.innerHTML = list.map(d => {
-        const isErr = d.deal_type === "ERROR_PRICE";
-        const badgeClass = isErr ? "deal-error" : "deal-normal";
-        const badgeText = isErr ? `🔥 Hatalı Fiyat %${d.discount_pct}` : `⚡ %${d.discount_pct} İndirim`;
+        let badgeClass = "badge-normal";
+        let badgeText = `%${d.discount_pct} İndirim`;
+        if (d.deal_type === "ERROR_PRICE") {
+          badgeClass = "badge-error";
+          badgeText = `🔥 Hatalı Fiyat (%${d.discount_pct})`;
+        } else if (d.deal_type === "MEGA_DEAL") {
+          badgeClass = "badge-mega";
+          badgeText = `⚡ Mega İndirim`;
+        }
+
         const safeUrl = (d.url && d.url.startsWith("http")) ? d.url : "#";
+        const safeImg = (d.image && d.image.startsWith("http")) ? d.image : "https://images.unsplash.com/photo-1526738549149-8e07eca6c147?auto=format&fit=crop&w=600&q=80";
 
         return `
           <div class="card">
-            <div>
-              <div class="card-top" style="margin-bottom: 10px;">
-                <span class="platform-tag">${d.platform}</span>
+            <div class="img-container">
+              <div class="badges-overlay">
+                <span class="platform-badge">${d.platform}</span>
                 <span class="deal-badge ${badgeClass}">${badgeText}</span>
               </div>
-              <div class="title">${d.title}</div>
+              <img src="${safeImg}" alt="${d.title}" loading="lazy" onerror="this.src='https://images.unsplash.com/photo-1526738549149-8e07eca6c147?auto=format&fit=crop&w=600&q=80'" />
             </div>
-            <div>
-              <div class="prices" style="margin-bottom: 12px;">
-                <span class="current">${formatTL(d.current_price)}</span>
-                <span class="old">${formatTL(d.old_price)}</span>
-                <span class="pct">-%${d.discount_pct}</span>
+            <div class="card-body">
+              <div>
+                <div class="title" title="${d.title}">${d.title}</div>
               </div>
-              <a class="btn" href="${safeUrl}" target="_blank" rel="noopener noreferrer">Ürüne Git →</a>
+              <div>
+                <div class="price-box" style="margin-bottom: 12px;">
+                  <span class="current-price">${formatTL(d.current_price)}</span>
+                  <span class="old-price">${formatTL(d.old_price)}</span>
+                  <span class="discount-rate">-%${d.discount_pct}</span>
+                </div>
+                <a class="btn" href="${safeUrl}" target="_blank" rel="noopener noreferrer">Ürüne Git →</a>
+              </div>
             </div>
           </div>
         `;
@@ -237,7 +357,7 @@
         allDeals = data.deals || [];
         renderDeals();
       } catch (e) {
-        document.getElementById("dealsGrid").innerHTML = `<div class="empty">Veriler yüklenemedi.</div>`;
+        document.getElementById("dealsGrid").innerHTML = `<div class="empty-state">Ürün veritabanı yüklenemedi. Lütfen biraz sonra tekrar deneyin.</div>`;
       }
     }
 
