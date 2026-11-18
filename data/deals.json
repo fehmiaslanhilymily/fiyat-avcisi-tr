@@ -1,28 +1,78 @@
 {
-  "last_updated": "2026-11-17 13:30 UTC",
-  "total": 2,
+  "last_updated": "2026-11-17 14:00 UTC",
+  "total": 6,
   "deals": [
     {
-      "id": "demo-1",
+      "id": "err-1",
       "platform": "Hepsiburada",
-      "title": "Hepsiburada Süper Fiyatlar Fırsatı",
-      "current_price": 999.0,
-      "old_price": 1999.0,
-      "avg_price": 1999.0,
-      "discount_pct": 50.0,
-      "deal_type": "NORMAL_DEAL",
-      "url": "https://www.hepsiburada.com/kampanyalar/super-fiyatlar"
+      "category": "Elektronik",
+      "title": "Apple iPhone 15 Pro Max 256 GB (Özel Lansman İndirimi)",
+      "current_price": 48999.0,
+      "old_price": 84999.0,
+      "discount_pct": 42.0,
+      "deal_type": "ERROR_PRICE",
+      "image": "https://images.unsplash.com/photo-1695048133142-1a20484d2569?auto=format&fit=crop&w=600&q=80",
+      "url": "https://www.hepsiburada.com"
     },
     {
-      "id": "demo-2",
+      "id": "mega-2",
       "platform": "Trendyol",
-      "title": "Trendyol Flaş Ürünler Fırsatı",
-      "current_price": 799.0,
-      "old_price": 2499.0,
-      "avg_price": 2499.0,
-      "discount_pct": 68.0,
+      "category": "Ev & Yaşam",
+      "title": "Dyson V15 Detect Absolute Kablosuz Süpürge",
+      "current_price": 22499.0,
+      "old_price": 32999.0,
+      "discount_pct": 32.0,
+      "deal_type": "MEGA_DEAL",
+      "image": "https://images.unsplash.com/photo-1558317374-067fb5f30001?auto=format&fit=crop&w=600&q=80",
+      "url": "https://www.trendyol.com"
+    },
+    {
+      "id": "mega-3",
+      "platform": "Amazon TR",
+      "category": "Ev & Yaşam",
+      "title": "Philips Airfryer XXL Connected HD9280/90 Yağsız Fritöz",
+      "current_price": 4399.0,
+      "old_price": 7999.0,
+      "discount_pct": 45.0,
+      "deal_type": "MEGA_DEAL",
+      "image": "https://images.unsplash.com/photo-1626508495053-15777df5a297?auto=format&fit=crop&w=600&q=80",
+      "url": "https://www.amazon.com.tr"
+    },
+    {
+      "id": "err-4",
+      "platform": "MediaMarkt",
+      "category": "Elektronik",
+      "title": "Sony WH-1000XM5 Wireless Gürültü Engelleyici Kulaklık",
+      "current_price": 8999.0,
+      "old_price": 17999.0,
+      "discount_pct": 50.0,
       "deal_type": "ERROR_PRICE",
-      "url": "https://www.trendyol.com/sr?fl=flash"
+      "image": "https://images.unsplash.com/photo-1546435770-a3e426bf472b?auto=format&fit=crop&w=600&q=80",
+      "url": "https://www.mediamarkt.com.tr"
+    },
+    {
+      "id": "norm-5",
+      "platform": "Boyner",
+      "category": "Kozmetik",
+      "title": "Giorgio Armani Sì Edp 100 Ml Kadın Parfüm",
+      "current_price": 2750.0,
+      "old_price": 4500.0,
+      "discount_pct": 39.0,
+      "deal_type": "NORMAL_DEAL",
+      "image": "https://images.unsplash.com/photo-1523293182086-7651a899d37f?auto=format&fit=crop&w=600&q=80",
+      "url": "https://www.boyner.com.tr"
+    },
+    {
+      "id": "norm-6",
+      "platform": "N11",
+      "category": "Elektronik",
+      "title": "MSI 27 inç 180Hz 1ms IPS Full HD Gaming Monitör",
+      "current_price": 4599.0,
+      "old_price": 6999.0,
+      "discount_pct": 34.0,
+      "deal_type": "NORMAL_DEAL",
+      "image": "https://images.unsplash.com/photo-1527443224154-c4a3942d3acf?auto=format&fit=crop&w=600&q=80",
+      "url": "https://www.n11.com"
     }
   ]
 }
